@@ -45,13 +45,13 @@ function setDataDisplay() {
               width: (gamescreen.right + 14) + "px"
             }}),
       elems = ["score", "coins", "world", "time", "lives"];
-  body.appendChild(display);
+  // body.appendChild(display);
   data.display = display;
   for(var i in elems) {
     display.appendChild(data[elems[i]].element);
     updateDataElement(data[elems[i]]);
   }
-  body.appendChild(data.display);
+  // body.appendChild(data.display);
 }
 
 // Getting rid of the display simply means removing it from body
@@ -60,6 +60,9 @@ function clearDataDisplay() {
 }
 
 function toggleLuigi() {
+  if (!window.luigi) {
+    return;
+  }
   window.luigi = !window.luigi;
   localStorage.luigi = window.luigi;
   window.player.title = (window.luigi) ? "Luigi" : "Mario";

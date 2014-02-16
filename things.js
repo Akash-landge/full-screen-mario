@@ -8,7 +8,7 @@
 // Examples:
 // * var mygoomb = new Thing(Goomba);
 // * var mykoopa = new Thing(Koopa, true);
-function Thing(type) {
+function Thing(type, extras, more, id) {
   // If there isn't a type, don't do anything
   if(arguments.length == 0 || !type) return;
   
@@ -19,6 +19,7 @@ function Thing(type) {
   args[0] = self;
   type.apply(self, args);
   self.alive = true;
+  self.id = id;
   self.placed = this.outerok = 0;
   self.xvel = this.xvel || 0;
   self.yvel = this.yvel || 0;
@@ -1758,6 +1759,7 @@ function killPlayer(me, big) {
     }
     // Otherwise, if this isn't a big one, animate a death
     else if(big != 2) {
+      if (window.godMode) { return; }
       // Make this look dead
       TimeHandler.clearAllCycles(me);
       setSize(me, 7.5, 7, true);
@@ -2535,6 +2537,12 @@ function FlagCollision(me, detector) {
           setTimeout(function() { FlagOff(me, detector.pole); }, timer * 21);
         }
         refillCanvas();
+        
+        setInterval(function() {
+          var elem = document.getElementsByTagName('body')[0];
+          var event = new CustomEvent("mario_connection", {"detail": '/summary'});
+          elem.dispatchEvent(event);
+        }, 2500);
       }, timer);
 }
 // See http://themushroomkingdom.net/smb_breakdown.shtml near bottom

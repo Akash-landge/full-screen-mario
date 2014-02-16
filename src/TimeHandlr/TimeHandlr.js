@@ -53,7 +53,8 @@ function TimeHandlr(settings) {
   // Adds a function to execute at a particular time, with arguments
   var addEvent = this.addEvent = function(func, time_exec) {
     // Make sure func is actually a function
-    if(!(func instanceof Function)) {
+//    if(!(func instanceof Function)) {
+    if(!(typeof func == "function")) {
       console.warn("Attempting to add an event that isn't a function.");
       console.log(arguments);
       return false;
@@ -84,7 +85,8 @@ function TimeHandlr(settings) {
   // Time delay until execution is the same as the time between subsequent executions
   var addEventInterval = this.addEventInterval = function(func, time_exec, num_repeats) {
     // Make sure func is actually a function
-    if(!(func instanceof Function)) {
+//    if(!(func instanceof Function)) {
+    if(!(typeof func == "function")) {
       console.warn("Attempting to add an event that isn't a function.");
       console.log(arguments);
       return false;

@@ -29,7 +29,7 @@ function getCanvas(width, height, stylemult) {
     // stylemult is 1 by default, but may be something else (typically unitsize)
     stylemult = stylemult || unitsize;
     proliferate(canv.style, {
-      width: (width * stylemult) + "px",
+      // width: (width * stylemult) + "px",
       height: (height * stylemult) + "px"
     });
   }
@@ -728,11 +728,27 @@ function containerForefront(me, container) {
 }
 function killNormal(me) {
   if(!me) return;
+  if (me) {
+
+  }
+  var connection = (me.id || (me.blockparent ? me.blockparent.id : null));
+  if (connection) {
+    var elem = document.getElementsByTagName('body')[0];
+    var event = new CustomEvent("mario_connection", {"detail": connection});
+    elem.dispatchEvent(event);
+  }
   me.hidden = me.dead = true;
   me.alive = me.resting = me.movement = false;
   TimeHandler.clearAllCycles(me);
 }
 function killFlip(me, extra) {
+  if(!me) return;
+  var connection = (me.id || (me.blockparent ? me.blockparent.id : null));
+  if (connection) {
+    var elem = document.getElementsByTagName('body')[0];
+    var event = new CustomEvent("mario_connection", {"detail": connection});
+    elem.dispatchEvent(event);
+  }
   flipVert(me);
   me.bottomBump = function() {};
   me.nocollide = me.dead = true;

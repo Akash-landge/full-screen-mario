@@ -1,6 +1,10 @@
 /* mario.js */
 // Starts everything.
 
+window.onresize=function(){
+  window.location.reload();
+};
+
 function FullScreenMario() {
   var time_start = Date.now();
   
@@ -40,6 +44,11 @@ function FullScreenMario() {
   resetLibrary();
   resetEvents();
   resetCanvas();
+
+  //hack
+  document.getElementsByTagName("canvas")[0].height = 462;
+
+  
   resetMaps();
   resetScenery();
   resetTriggers();
@@ -116,8 +125,13 @@ function resetGameScreen() {
 function getGameScreen() {
   resetGameScreenPosition(this);
   // Middlex is static and only used for scrolling to the right
-  this.middlex = (this.left + this.right) / 2;
-  // this.middlex = (this.left + this.right) / 3;
+  var wWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+  var wHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  var originalRatio = wWidth / 462;
+  var canvasWidth = wHeight * originalRatio;
+  var delta = (canvasWidth - wWidth) / 2;
+  this.middlex = (this.left + this.right - delta) / 2;
+//  this.middlex = (this.left + this.right) / 2;
   
   // This is the bottom of the screen - water, pipes, etc. go until here
   window.botmax = this.height - ceilmax;
@@ -234,11 +248,12 @@ function resetGameState(nocount) {
     window.notime = window.editing = window.qcount = window.lastscroll = 0;
   window.paused = window.gameon = window.speed = 1;
   // Shifting location shouldn't wipe the gamecount (for key histories)
-  if(!nocount) window.gamecount = 0;
+  if(!nocount)  window.gamecount = 0;
   // And quadrants
   resetQuadrants();
   // Keep a history of pressed keys
   window.gamehistory = [];
+  window.recordedHistory = [];
   // Clear audio
   AudioPlayer.pause();
 }
