@@ -7,6 +7,14 @@ var loadstart,
     body,
     elemSelect;
 
+// $(function() {
+//   $('iframe').load(function(){
+//     $('iframe:first').contents().find( "body" ).on( "mario_connection", function(eventData) {
+//       console.log('mario_connection: ', eventData.originalEvent.detail);
+//     });
+//   });
+// });
+
 function start() {
   // Don't double start
   if(window.loadstart) return;
@@ -32,6 +40,11 @@ function start() {
   
   // Make lots of friends
   setCheats();
+
+  //apply some cheats
+  game.data.time.amount = Infinity;
+  game.gainLife(Infinity)
+  game.godMode = true;
 }
 
 function setLocalStatus() {
@@ -65,8 +78,10 @@ function setMapSelector(timed) {
       innerHTML += createAdderMap(i, j);
   
   // Add that HTML to #in_mapselect, along with a big one for random maps
-  elemSelect.innerHTML += innerHTML + createAdderBigMap("Map Generator!", "setGameMapRandom");
-  
+  if (elemSelect) {
+    elemSelect.innerHTML += innerHTML + createAdderBigMap("Map Generator!", "setGameMapRandom");
+  }
+
   // If this isn't local, actually responding to the game loading maps is doable
   // See load.js
   if(!isLocal) {
@@ -134,7 +149,9 @@ function setLevelEditor() {
   var out = document.getElementById("in_editor"),
       blurb = "Why use Nintendo's?<br />";
   button = createAdderBigMap("Make your<br />own levels!", "startEditor", true);
-  out.innerHTML += blurb + button + "<br />You can save these as text files when you're done.";
+  if (out) {
+    out.innerHTML += blurb + button + "<br />You can save these as text files when you're done.";
+  }
 }
 
 function startEditor() {
@@ -159,7 +176,9 @@ function setOptions() {
     innerHTML += "<div class='maprectout' onclick='toggleGame(\"" + option + "\")'><div class='maprect big larger'>Toggle " + option + "</div></div>";
     innerHTML += "<br />";
   }
-  out.innerHTML += innerHTML + "<br />More coming soon!";
+  if (out) {
+    out.innerHTML += innerHTML + "<br />More coming soon!";
+  }
 }
 
 // Fills the keys mapping menu with div and input to change the keys
@@ -207,10 +226,6 @@ function toggleGame(me) {
 
 function setCheats() {
   var i;
-  console.log("Hi, thanks for playing Full Screen Mario! I see you're using the console.");
-  console.log("There's not really any way to stop you from messing around so if you'd like to know the common cheats, enter \"displayCheats()\" here.");
-  console.log("If you'd like, go ahead and look around the source code. There are a few surprises you might have fun with... ;)");
-  console.log("http://www.github.com/DiogenesTheCynic/FullScreenMario");
   window.cheats = {
     Change_Map: "game.setMap([#,#] or #,#);",
     Change_Map_Location: "game.shiftToLocation(#);",

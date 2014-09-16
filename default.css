@@ -15,16 +15,16 @@ body {
   position: absolute;
   height: 49px;
   width: 100%;
-	background-image:url('Theme/Header.gif');
-	background-repeat:no-repeat;
-	background-color:#070707;
+  background-image:url('Theme/Header.gif');
+  background-repeat:no-repeat;
+  background-color:#070707;
 }
 
 iframe {
   position: absolute;
-  margin-top: 49px;
   width: 100%;
-  height: 462px;
+  /*height: 462px;*/
+  height: 100%;
   border: 0;
   z-index: -96;
 }

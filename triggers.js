@@ -81,16 +81,19 @@ function Controls(pipes, gamepadPipes) {
   var keydown = this.keydown = {
     // Left
     left: function(keys) {
+      record.key.start('left');
       keys.run = -1;
       keys.left_down = true;
     },
     // Right
     right: function(keys) {
+      record.key.start('right');
       keys.run = 1;
       keys.right_down = true; // independent of changes to player.keys.run
     },
     // Up / Jump
     up: function(keys) {
+      record.key.start('up');
       keys.up = true;
       if(player.canjump &&/* !player.crouching &&*/ (player.resting || map.underwater)) {
         keys.jump = 1;
@@ -104,6 +107,7 @@ function Controls(pipes, gamepadPipes) {
     },
     // Down / Crouch
     down: function(keys) {
+      record.key.start('down');
       keys.crouch = true;
     },
     // Sprint / Fire
@@ -139,21 +143,25 @@ function Controls(pipes, gamepadPipes) {
     left: function(keys) {
       keys.run = 0;
       keys.left_down = false;
+      record.key.end('left');
     },
     // Right
     right: function(keys) {
       keys.run = 0;
       keys.right_down = false;
+      record.key.end('right');
     },
     // Up
     up: function(keys) {
       if(!map.underwater) keys.jump = keys.up = 0;
       player.canjump = true;
+      record.key.end('up');
     },
     // Down
     down: function(keys) {
       keys.crouch = 0;
       removeCrouch();
+      record.key.end('down');
     },
     // Spring
     sprint: function(keys) {
@@ -162,7 +170,7 @@ function Controls(pipes, gamepadPipes) {
     // Pause (if held down)
     pause: function(keys) {
       unpause(true);
-    },
+    }
   }
 
   var tag, codes, code, i;
@@ -250,6 +258,67 @@ function scriptKeys(oldhistory) {
   }
 }
 
+var record = {
+  isRecording: false,
+  recordedHistoryTmp: {},
+  key: {}
+};
+record.key.start = function(key) {
+  if (record.isRecording) {
+    record.recordedHistoryTmp[key] = {
+      startTime: TimeHandler.getTime(),
+      startTimeMs: Date.now()
+    }
+  }
+};
+record.key.end = function(key) {
+  if (record.isRecording) {
+    var endTimeMs = Date.now();
+    var endTime = TimeHandler.getTime();
+    if(!paused) {
+      var keyObject = {
+        key: key,
+        startTime: record.recordedHistoryTmp[key].startTime,
+        endTime: endTime,
+        interval: endTimeMs - record.recordedHistoryTmp[key].startTimeMs
+      };
+      recordedHistory.push(keyObject);
+      console.log(window.recordedHistory);
+    }
+  }
+};
+record.get = function() {
+  console.log(JSON.stringify(recordedHistory));
+}
+record.clear = function() {
+  window.recordedHistory = [];
+}
+record.play = function(what) {
+  for (var i = 0; i < what.length; i++) {
+    (function(){
+      var currentTime = TimeHandler.getTime();
+      var key = what[i].key;
+      var startTime = what[i].startTime - currentTime;
+      var endTime = what[i].endTime - currentTime;
+      var interval = what[i].interval;
+
+//      TimeHandler.addEvent(function() {
+//        controls.keydown[key](player.keys);
+//        setTimeout(function(){
+//          controls.keyup[key](player.keys);
+//        }, interval + 400);
+//      }, startTime);
+
+      TimeHandler.addEvent(function() {
+        controls.keydown[key](player.keys);
+      }, startTime);
+
+      TimeHandler.addEvent(function() {
+        controls.keyup[key](player.keys);
+      }, endTime);
+    })();
+  }
+}
 
 function lulz(options, timer) {
   player.star = true;
